@@ -282,7 +282,7 @@ client.on('interactionCreate', async interaction => {
                       interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
                   }
                   games[chid].nextTurn();
-                  interaction.reply("Bruh!")
+                  // interaction.reply("Bruh!")
                   console.log("game child")
                   console.log(games[chid])
                   console.log("game child turn")
@@ -295,7 +295,8 @@ client.on('interactionCreate', async interaction => {
                   console.log(games[chid].players[games[chid].turn].id)
                   // The code is fine up to this point!
                   interaction.reply(`it's <@${games[chid].players[games[chid].turn].id}> 's turn!`);
-              }else{
+              }
+              else{
                   if(games[chid].players[p].hand[spot].type == "color"){
                       games[chid].colorPicking = true;
                   }
@@ -319,14 +320,21 @@ client.on('interactionCreate', async interaction => {
 
               }
               console.log(games[chid].players[p].hand[spot]);
+              console.log("bruh")
               games[chid].draw = games[chid].players[p].hand[spot].draw;
+              console.log("bruh 2")
               if(games[chid].draw > 0){
                   games[chid].targetPicking = true;
                   interaction.reply("ping a target");
               }
+              console.log("bruh 3")
               games[chid].lastCard = games[chid].players[p].hand[spot];
-              games[chid].returnCard(p,spot)
-              interaction.reply("you used the "+content[0]+" "+content[1]+" card");
+              console.log("bruh 4")
+              games[chid].returnCard(p,spot);
+              console.log("bruh 5");
+
+              // so apparently if you want to print this it crashes??????
+              //interaction.reply("you used the "+content[0]+" "+content[1]+" card");
               if(games[chid].players[games[chid].turn].hand.length == 1){
                   interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
               }
