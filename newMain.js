@@ -9,6 +9,24 @@ var commands = [
     
 ];
 
+// Shuffle your cards
+function shuffle (array){
+  const arrayLength = array.length;
+
+  for (let i = array.length; i > 0; ){
+    // We pick a remaining element
+    randI = Math.floor(Math.random() * i);
+    i--;
+
+    //Swap it with the current element
+    let temp = array[i]
+    array[i] = array[randI]
+    array[randI] = temp
+  }
+
+  return array
+}
+
 var c = new SlashCommandBuilder()
 .setName('define')
 .setDescription('defines a word (word:definition)')
