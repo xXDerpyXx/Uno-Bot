@@ -282,7 +282,19 @@ client.on('interactionCreate', async interaction => {
                       interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
                   }
                   games[chid].nextTurn();
-                  interaction.reply("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!");
+                  interaction.reply("Bruh!")
+                  console.log("game child")
+                  console.log(games[chid])
+                  console.log("game child turn")
+                  console.log(games[chid].turn)
+                  console.log("game child players(game child turn)")
+                  console.log(games[chid].players[games[chid].turn])
+                  console.log("the id")
+                  console.log(games[chid].players[games[chid].turn].id)
+
+                  console.log(games[chid].players[games[chid].turn].id)
+                  // The code is fine up to this point!
+                  interaction.reply(`it's <@${games[chid].players[games[chid].turn].id}> 's turn!`);
               }else{
                   if(games[chid].players[p].hand[spot].type == "color"){
                       games[chid].colorPicking = true;

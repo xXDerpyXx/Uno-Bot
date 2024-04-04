@@ -351,6 +351,7 @@ function say(msg, text) {
                                     games[msg.channel.id].nextTurn();
                                 //}
                                 games[msg.channel.id].colorPicking = false;
+
                                 msg.channel.send("it's <@"+games[msg.channel.id].players[games[msg.channel.id].turn].id+">'s turn!");
                             }else{
                                 msg.channel.send("you need to pick a color");
