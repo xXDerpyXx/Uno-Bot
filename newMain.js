@@ -27,6 +27,85 @@ function shuffle (array){
   return array
 }
 
+class player{
+  constructor(id){
+      this.id = id;
+      this.hand = [];
+  }
+
+  stringHand(m){
+      var temp = "";
+      for(var i = 0; i < this.hand.length; i++){
+          temp += this.hand[i].color+" "+this.hand[i].name
+          if(i <= this.hand.length){
+              temp+=", "
+          }
+      }
+      return temp+" "+m;
+  }
+}
+
+class game{
+  constructor(type,deckOptions){
+      this.players = [];
+      this.type = type;
+      this.deck = makeDeck(deckOptions.types,deckOptions.variant,deckOptions.variants);
+      this.deck = shuffle(this.deck);
+      this.running = false;
+      this.turn = 0;
+      this.turnCounter = 1;
+      this.colorPicking = false;
+      this.targetPicking = false;
+      this.draw = 0;
+      this.lastCard = null;
+
+  }
+
+  addPlayer(id){
+      this.players.push(new player(id))
+  }
+
+  notifyunocards(id,m){
+      duckling.fetchUser(id).then((user) => {
+          var i = 0;
+          for(var k = 0; k < this.players.length;k++){
+              if(this.players[k].id == id){
+                  i = k;
+                  break;
+              }
+          }
+          user.send(this.players[i].stringHand(m));
+      });
+  }
+
+  giveCard(p,i){ //i == card index
+      var c = this.deck.splice(i,1)[0]
+      if(c.type == "color"){
+          c.color = "wild";
+      }
+      this.players[p].hand.push(c);
+  }
+
+  returnCard(p,i){ //i == card index
+      var c = this.players[p].hand.splice(i,1)[0]
+      if(c.type == "color"){
+          c.color = "wild";
+      }
+      this.deck.push(c);
+  }
+
+  nextTurn(){
+      this.turn += this.turnCounter;
+      if(this.turn < 0){
+          this.turn = this.players.length-1;
+      }else if(this.turn >= this.players.length){
+          this.turn = 0;
+      }
+  }
+}
+
+var games = {};
+
 var c = new SlashCommandBuilder()
 .setName('define')
 .setDescription('defines a word (word:definition)')
