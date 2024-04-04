@@ -1,4 +1,3 @@
-var dict = require("./dict.json")
 var TOKEN = require("./token.js");
 var CLIENT_ID = "353996572717219850"
 var fs = require("fs")
