@@ -1,6 +1,6 @@
-{
+module.exports = {
   "0":{
-    type:"number",
+    "type":"number",
     draw:0,
     color:"random"
   },
