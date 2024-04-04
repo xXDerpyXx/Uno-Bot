@@ -1,5 +1,5 @@
 var TOKEN = require("./token.js");
-var CLIENT_ID = "353996572717219850"
+var CLIENT_ID = "334106485535539212"
 var fs = require("fs")
 
 
