@@ -33,20 +33,28 @@ class player{
       this.hand = [];
   }
 
+  /**
+   * Take a player's entire hand and then convert it into string form
+   * (To be legible)
+   * **/
   stringHand(m){
-      var temp = "";
-      for(var i = 0; i < this.hand.length; i++){
-          temp += this.hand[i].color+" "+this.hand[i].name
+      let temp = "";
+      for(let i = 0; i < this.hand.length; i++){
+          temp = `${this.hand[i].color} ${this.hand[i].name}`
           if(i <= this.hand.length){
-              temp+=", "
+              temp = `${temp}, `
           }
       }
-      return temp+" "+m;
+
+      return `${temp} ${m}`
   }
 }
 
+// Main game state
 class game{
   constructor(type,deckOptions){
+
+
       this.players = [];
       this.type = type;
       this.deck = makeDeck(deckOptions.types,deckOptions.variant,deckOptions.variants);
@@ -61,44 +69,51 @@ class game{
 
   }
 
-  addPlayer(id){
-      this.players.push(new player(id))
+  // Add player to the game
+  addPlayer(playerId){
+      this.players.push(new player(playerId))
   }
 
-  notifyunocards(id,m){
-      duckling.fetchUser(id).then((user) => {
-          var i = 0;
-          for(var k = 0; k < this.players.length;k++){
-              if(this.players[k].id == id){
-                  i = k;
+  /**
+   * Notify a user of their uno cards
+   * @param playerId : int : a player's user id
+   * @param message : string : message to be sent
+   * */
+  notifyunocards(playerId, message){
+      duckling.fetchUser(playerId).then(
+          (user) => {
+          //Iterate through all the players
+          for(let k = 0; k < this.players.length; k++){
+              if(this.players[k].id === playerId){
+                  user.send(this.players[k].stringHand(message))
                   break;
               }
           }
-          user.send(this.players[i].stringHand(m));
       });
   }
 
-  giveCard(p,i){ //i == card index
-      var c = this.deck.splice(i,1)[0]
-      if(c.type == "color"){
-          c.color = "wild";
+  giveCard(player,i){ //i == card index
+      let card = this.deck.splice(i,1)[0]
+      if(card.type === "color"){
+          card.color = "wild";
       }
-      this.players[p].hand.push(c);
+      this.players[player].hand.push(card);
   }
 
-  returnCard(p,i){ //i == card index
-      var c = this.players[p].hand.splice(i,1)[0]
-      if(c.type == "color"){
-          c.color = "wild";
+  returnCard(player,i){ //i == card index
+      let card = this.players[player].hand.splice(i,1)[0]
+      if(card.type === "color"){
+          card.color = "wild";
       }
-      this.deck.push(c);
+      this.deck.push(card);
   }
 
+  // Increment the turns by the turn counter
   nextTurn(){
       this.turn += this.turnCounter;
-      if(this.turn < 0){
-          this.turn = this.players.length-1;
-      }else if(this.turn >= this.players.length){
+      if (this.turn < 0){
+          this.turn = this.players.length - 1;
+      } else if (this.turn >= this.players.length){
           this.turn = 0;
       }
   }
