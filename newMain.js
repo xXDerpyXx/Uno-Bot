@@ -338,6 +338,14 @@ client.on('interactionCreate', async interaction => {
         }
       }else{
 
+        if(interaction.commandName === "deck"){
+            if(!games[chid]){
+                interaction.reply("there is no game in this channel")
+                return;
+            }
+            interaction.reply("deck has "+games[chid].deck.length+" unocards left in it")
+        }
+
         //If you want to draw a card
         if (interaction.commandName === "draw"){
           interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> drew a card!")
@@ -371,6 +379,14 @@ client.on('interactionCreate', async interaction => {
 
             finalMessage += ("you used the "+content[0]+" "+content[1]+" card")+"\n";
             
+            if(games[chid].players[games[chid].turn].hand.length == 0){
+                interaction.reply(finalMessage+"<@"+games[chid].players[games[chid].turn].id+"> wins!");
+                games[chid] = null;
+                delete games[chid];
+                return;
+            }
+
+                  
 
             if(games[chid].lastCard == null || content[0] == "wild" || content[0] == games[chid].lastCard.color || content[1] == games[chid].lastCard.name){
               if(games[chid].players[p].hand[spot].type == "number" && games[chid].players[p].hand[spot].draw == 0){
@@ -378,18 +394,6 @@ client.on('interactionCreate', async interaction => {
                     finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                   }
                   games[chid].nextTurn();
-                  // interaction.reply("Bruh!")
-                  console.log("game child")
-                  console.log(games[chid])
-                  console.log("game child turn")
-                  console.log(games[chid].turn)
-                  console.log("game child players(game child turn)")
-                  console.log(games[chid].players[games[chid].turn])
-                  console.log("the id")
-                  console.log(games[chid].players[games[chid].turn].id)
-
-                  console.log(games[chid].players[games[chid].turn].id)
-                  // The code is fine up to this point!
                   finalMessage += (`it's <@${games[chid].players[games[chid].turn].id}> 's turn!`)+"\n";
               }
               else{
@@ -411,14 +415,12 @@ client.on('interactionCreate', async interaction => {
                       }
                       games[chid].nextTurn();
                       games[chid].nextTurn();
-                      ifinalMessage +=("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!")+"\n";
+                      finalMessage +=("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!")+"\n";
                   }
 
               }
               console.log(games[chid].players[p].hand[spot]);
-              console.log("bruh")
               games[chid].draw = games[chid].players[p].hand[spot].draw;
-              console.log("bruh 2")
               if(games[chid].draw > 0){
                   games[chid].targetPicking = true;
                   finalMessage +=("ping a target")+"\n";
@@ -426,11 +428,8 @@ client.on('interactionCreate', async interaction => {
               if(games[chid].colorPicking == true){
                 finalMessage +=("choose a color")+"\n";
             }
-              console.log("bruh 3")
               games[chid].lastCard = games[chid].players[p].hand[spot];
-              console.log("bruh 4")
               games[chid].returnCard(p,spot);
-              console.log("bruh 5");
 
               // so apparently if you want to print this it crashes??????
               //interaction.reply("you used the "+content[0]+" "+content[1]+" card");
