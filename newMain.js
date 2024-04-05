@@ -323,6 +323,12 @@ client.on('interactionCreate', async interaction => {
               return;
             }
 
+            //If you want to draw a card
+            if (interaction.commandName === "draw"){
+                interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> has decided to draw a card!")
+                //logic and shit
+            }
+
             if(games[chid].lastCard == null || content[0] == "wild" || content[0] == games[chid].lastCard.color || content[1] == games[chid].lastCard.name){
               if(games[chid].players[p].hand[spot].type == "number" && games[chid].players[p].hand[spot].draw == 0){
                   if(games[chid].players[games[chid].turn].hand.length == 2){
