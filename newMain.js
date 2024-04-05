@@ -303,6 +303,13 @@ client.on('interactionCreate', async interaction => {
           }
         }
       }else{
+
+        //If you want to draw a card
+        if (interaction.commandName === "draw"){
+          interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> has decided to draw a card!")
+          //logic and shit
+        }
+
         if (interaction.commandName === 'play') {
           var id = games[chid].players[games[chid].turn].id;
           var p = games[chid].turn;
@@ -324,6 +331,7 @@ client.on('interactionCreate', async interaction => {
             }
 
             interaction.reply("you used the "+content[0]+" "+content[1]+" card");
+            
 
             if(games[chid].lastCard == null || content[0] == "wild" || content[0] == games[chid].lastCard.color || content[1] == games[chid].lastCard.name){
               if(games[chid].players[p].hand[spot].type == "number" && games[chid].players[p].hand[spot].draw == 0){
