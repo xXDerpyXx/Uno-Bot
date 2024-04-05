@@ -221,6 +221,19 @@ client.on('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
+    if(games[chid] != null){
+      if(games[chid].running){
+        if(games[chid].colorPicking == true){
+          var id = games[chid].players[games[chid].turn].id;
+          var p = games[chid].turn;
+          if(id == interaction.user.id){
+            if(colors.includes(interaction.content)){
+              games[chid].lastCard.color = interaction.content
+            }
+          }
+        }
+      }
+    }
     if (!interaction.isChatInputCommand()) return;
     chid = interaction.channelId;
 
@@ -327,6 +340,9 @@ client.on('interactionCreate', async interaction => {
                   games[chid].targetPicking = true;
                   interaction.reply("ping a target");
               }
+              if(games[chid].colorPicking == true){
+                interaction.reply("choose a color");
+            }
               console.log("bruh 3")
               games[chid].lastCard = games[chid].players[p].hand[spot];
               console.log("bruh 4")
