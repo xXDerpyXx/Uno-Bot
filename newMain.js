@@ -221,21 +221,55 @@ client.on('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
+
+  chid = interaction.channelId;
+
     if(games[chid] != null){
       if(games[chid].running){
-        if(games[chid].colorPicking == true){
-          var id = games[chid].players[games[chid].turn].id;
-          var p = games[chid].turn;
-          if(id == interaction.user.id){
+        var id = games[chid].players[games[chid].turn].id;
+        var p = games[chid].turn;
+        if(id == interaction.user.id){
+          if(games[chid].colorPicking == true){
             if(colors.includes(interaction.content)){
               games[chid].lastCard.color = interaction.content
+              interaction.reply("the color is now "+interaction.content)
+              if(!games[chid].targetPicking){
+                games[chid].nextTurn();
+              }else{
+                interaction.reply("pick a target")
+              }
+            }
+          }
+
+          if(games[chid].targetPicking == true){
+            if(colors.includes(interaction.content)){
+              games[chid].lastCard.color = interaction.content
+              interaction.reply("they now draw "+games[chid].draw+" cards")
+              var p = 0;
+              for(var k = 0; k < games[chid].players.length; k++){
+                  if(games[chid].players[k].id == games[chid].players[(games[chid].turn+1)%games[chid].players.length].id){
+                      p = k;
+                  }
+              }
+              var temp = "";
+              for(var i = 0; i < games[chid].draw; i++){
+                  temp += games[chid].deck[0].color+" "+games[chid].deck[0].name+", "
+                  games[chid].giveCard(p,0);
+              }
+              games[chid].notifyunocards(games[chid].players[(games[chid].turn+1)%games[chid].players.length].id,"[forced to draw "+temp+" unocards]")
+              games[chid].draw = 0;
+              if(!games[chid].colorPicking){
+                games[chid].nextTurn();
+              }else{
+                interaction.reply("pick a color")
+              }
             }
           }
         }
       }
     }
     if (!interaction.isChatInputCommand()) return;
-    chid = interaction.channelId;
+    
 
     if(games[chid] != null){
       if(interaction.commandName === 'join'){
