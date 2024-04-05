@@ -213,61 +213,95 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
   }
 })();
 
-const { Client, GatewayIntentBits } = require('discord.js');
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const { Client, GatewayIntentBits, Intents } = require('discord.js');
+const client = new Client({ intents: [
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.MessageContent,
+]
+ });
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('interactionCreate', async interaction => {
+function getUserFromMention(mention) {
+	if (!mention) return false;
 
-  chid = interaction.channelId;
+	if (mention.startsWith('<@') && mention.endsWith('>')) {
+		mention = mention.slice(2, -1);
 
-    if(games[chid] != null){
-      if(games[chid].running){
-        var id = games[chid].players[games[chid].turn].id;
-        var p = games[chid].turn;
-        if(id == interaction.user.id){
-          if(games[chid].colorPicking == true){
-            if(colors.includes(interaction.content)){
-              games[chid].lastCard.color = interaction.content
-              interaction.reply("the color is now "+interaction.content)
-              if(!games[chid].targetPicking){
-                games[chid].nextTurn();
-              }else{
-                interaction.reply("pick a target")
-              }
+		if (mention.startsWith('!')) {
+			mention = mention.slice(1);
+		}
+
+		return mention;
+	}
+}
+
+client.on('messageCreate', (msg) => {
+
+  var chid = msg.channelId;
+
+  if(games[chid] != null){
+    if(games[chid].running){
+      var id = games[chid].players[games[chid].turn].id;
+      var p = games[chid].turn;
+      if(id == msg.member.id){
+        if(games[chid].colorPicking == true){
+          if(colors.includes(msg.content)){
+            games[chid].lastCard.color = msg.content
+            games[chid].colorPicking = false
+            
+            if(!games[chid].targetPicking){
+              msg.reply("the color is now "+msg.content)
+              games[chid].nextTurn();
+            }else{
+              msg.reply("the color is now "+msg.content+", also pick a target")
             }
+          }else{
+            if(!getUserFromMention(msg.content))
+              msg.reply("pick a color")
           }
+        }
 
-          if(games[chid].targetPicking == true){
-            if(colors.includes(interaction.content)){
-              games[chid].lastCard.color = interaction.content
-              interaction.reply("they now draw "+games[chid].draw+" cards")
-              var p = 0;
-              for(var k = 0; k < games[chid].players.length; k++){
-                  if(games[chid].players[k].id == games[chid].players[(games[chid].turn+1)%games[chid].players.length].id){
-                      p = k;
-                  }
-              }
-              var temp = "";
-              for(var i = 0; i < games[chid].draw; i++){
-                  temp += games[chid].deck[0].color+" "+games[chid].deck[0].name+", "
-                  games[chid].giveCard(p,0);
-              }
-              games[chid].notifyunocards(games[chid].players[(games[chid].turn+1)%games[chid].players.length].id,"[forced to draw "+temp+" unocards]")
-              games[chid].draw = 0;
-              if(!games[chid].colorPicking){
-                games[chid].nextTurn();
-              }else{
-                interaction.reply("pick a color")
-              }
+        if(games[chid].targetPicking == true){
+          if(getUserFromMention(msg.content)){
+            var tempMessage = "they now draw "+games[chid].draw+" cards"
+            var p = 0;
+            for(var k = 0; k < games[chid].players.length; k++){
+                if(games[chid].players[k].id == getUserFromMention(msg.content)){
+                    p = k;
+                }
             }
+            var temp = "";
+            for(var i = 0; i < games[chid].draw; i++){
+                temp += games[chid].deck[0].color+" "+games[chid].deck[0].name+", "
+                games[chid].giveCard(p,0);
+            }
+            games[chid].targetPicking = false
+            games[chid].notifyunocards(games[chid].players[(games[chid].turn+1)%games[chid].players.length].id,"[forced to draw "+temp+" unocards]",msg)
+            games[chid].draw = 0;
+            if(!games[chid].colorPicking){
+              games[chid].nextTurn();
+              msg.reply(tempMessage)
+            }else{
+              msg.reply(tempMessage+"\npick a color")
+            }
+          }else{
+            msg.reply("not a target")
           }
         }
       }
     }
+  }
+});
+
+client.on('interactionCreate', async interaction => {
+
+  var chid = interaction.channelId;
+
+    
     if (!interaction.isChatInputCommand()) return;
     
 
@@ -306,11 +340,16 @@ client.on('interactionCreate', async interaction => {
 
         //If you want to draw a card
         if (interaction.commandName === "draw"){
-          interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> has decided to draw a card!")
+          interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> drew a card!")
+          var temp = games[chid].deck[0];
+          games[chid].giveCard(games[chid].turn,0);
+          games[chid].notifyunocards(interaction.user.id,"[decided to draw "+temp.color+" "+temp.name+"]",interaction);
           //logic and shit
         }
 
         if (interaction.commandName === 'play') {
+          var finalMessage = "" //goodbye
+
           var id = games[chid].players[games[chid].turn].id;
           var p = games[chid].turn;
           if(id == interaction.user.id){
@@ -330,13 +369,13 @@ client.on('interactionCreate', async interaction => {
               return;
             }
 
-            interaction.reply("you used the "+content[0]+" "+content[1]+" card");
+            finalMessage += ("you used the "+content[0]+" "+content[1]+" card")+"\n";
             
 
             if(games[chid].lastCard == null || content[0] == "wild" || content[0] == games[chid].lastCard.color || content[1] == games[chid].lastCard.name){
               if(games[chid].players[p].hand[spot].type == "number" && games[chid].players[p].hand[spot].draw == 0){
                   if(games[chid].players[games[chid].turn].hand.length == 2){
-                      interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
+                    finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                   }
                   games[chid].nextTurn();
                   // interaction.reply("Bruh!")
@@ -351,7 +390,7 @@ client.on('interactionCreate', async interaction => {
 
                   console.log(games[chid].players[games[chid].turn].id)
                   // The code is fine up to this point!
-                  interaction.reply(`it's <@${games[chid].players[games[chid].turn].id}> 's turn!`);
+                  finalMessage += (`it's <@${games[chid].players[games[chid].turn].id}> 's turn!`)+"\n";
               }
               else{
                   if(games[chid].players[p].hand[spot].type == "color"){
@@ -361,18 +400,18 @@ client.on('interactionCreate', async interaction => {
                   if(games[chid].players[p].hand[spot].type == "reverse"){
                       games[chid].turnCounter *= -1;
                       if(games[chid].players[games[chid].turn].hand.length == 2){
-                          interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
+                        finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                       }
                       games[chid].nextTurn();
-                      interaction.reply("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!");
+                      finalMessage +=("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!")+"\n";
                   }
                   if(games[chid].players[p].hand[spot].type == "skip"){
                       if(games[chid].players[games[chid].turn].hand.length == 2){
-                          interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
+                        finalMessage +=("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                       }
                       games[chid].nextTurn();
                       games[chid].nextTurn();
-                      interaction.reply("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!");
+                      ifinalMessage +=("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!")+"\n";
                   }
 
               }
@@ -382,10 +421,10 @@ client.on('interactionCreate', async interaction => {
               console.log("bruh 2")
               if(games[chid].draw > 0){
                   games[chid].targetPicking = true;
-                  interaction.reply("ping a target");
+                  finalMessage +=("ping a target")+"\n";
               }
               if(games[chid].colorPicking == true){
-                interaction.reply("choose a color");
+                finalMessage +=("choose a color")+"\n";
             }
               console.log("bruh 3")
               games[chid].lastCard = games[chid].players[p].hand[spot];
@@ -396,10 +435,10 @@ client.on('interactionCreate', async interaction => {
               // so apparently if you want to print this it crashes??????
               //interaction.reply("you used the "+content[0]+" "+content[1]+" card");
               if(games[chid].players[games[chid].turn].hand.length == 1){
-                  interaction.reply("Uno <@"+games[chid].players[games[chid].turn].id+">!");
+                finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!");
               }
               games[chid].notifyunocards(id,"[used the "+content[0]+" "+content[1]+" card]",interaction);
-
+              interaction.reply(finalMessage)
           }else{
               interaction.reply("you cant use that card")
           }
