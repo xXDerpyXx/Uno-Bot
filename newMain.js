@@ -4,6 +4,7 @@ var fs = require("fs")
 
 unocards = require("./unoCards.js")
 evilunocards = require("./unoCardsEvil.js")
+alphabetunocards = require("./unoCardsAlphabet.js")
 unocardtypes = require("./unoCards.js")
 
 var colors = [
@@ -314,7 +315,7 @@ client.on('messageCreate', (msg) => {
                   games[chid].giveCard(p,0);
               }
               games[chid].targetPicking = false
-              games[chid].notifyunocards(games[chid].players[(games[chid].turn+1)%games[chid].players.length].id,"[forced to draw "+temp+" unocards]",msg)
+              games[chid].notifyunocards(games[chid].players[p].id,"[forced to draw "+temp+" unocards]",msg)
               games[chid].draw = 0;
               if(!games[chid].colorPicking){
                 games[chid].nextTurn();
@@ -334,6 +335,12 @@ client.on('messageCreate', (msg) => {
   if(msg.content === '/starteviluno'){
     msg.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
     games[chid] = new game("uno",{"types":evilunocards,"variant":"color","variants":evilcolors});
+    games[chid].addPlayer(msg.member.id);
+  }
+
+  if(msg.content === '/startalphabetuno'){
+    msg.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
+    games[chid] = new game("uno",{"types":alphabetunocards,"variant":"color","variants":colors});
     games[chid].addPlayer(msg.member.id);
   }
 });
@@ -396,11 +403,14 @@ client.on('interactionCreate', async interaction => {
 
         //If you want to draw a card
         if (interaction.commandName === "draw"){
-          interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> drew a card!")
+          await interaction.reply("<@"+games[chid].players[games[chid].turn].id+"> drew a card!")
           var temp = games[chid].deck[0];
           games[chid].giveCard(games[chid].turn,0);
           games[chid].notifyunocards(interaction.user.id,"[decided to draw "+temp.color+" "+temp.name+"]",interaction);
-          //logic and shit
+          await interaction.followUp({
+            content:"you drew a "+temp.color+" "+temp.name,
+            ephemeral: true
+          });
         }
 
         if (interaction.commandName === 'play') {
@@ -437,7 +447,7 @@ client.on('interactionCreate', async interaction => {
                     finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                   }
                   if(games[chid].players[games[chid].turn].hand.length == 1){
-                    interaction.reply(finalMessage+"<@"+games[chid].players[games[chid].turn].id+"> wins!");
+                    interaction.reply(finalMessage+"\n# <@"+games[chid].players[games[chid].turn].id+"> wins!");
                     games[chid] = null;
                     delete games[chid];
                     return;
@@ -456,7 +466,7 @@ client.on('interactionCreate', async interaction => {
                         finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                       }
                       if(games[chid].players[games[chid].turn].hand.length == 1){
-                        interaction.reply(finalMessage+"<@"+games[chid].players[games[chid].turn].id+"> wins!");
+                        interaction.reply(finalMessage+"\n# <@"+games[chid].players[games[chid].turn].id+"> wins!");
                         games[chid] = null;
                         delete games[chid];
                         return;
@@ -469,7 +479,7 @@ client.on('interactionCreate', async interaction => {
                         finalMessage +=("Uno <@"+games[chid].players[games[chid].turn].id+">!")+"\n";
                       }
                       if(games[chid].players[games[chid].turn].hand.length == 1){
-                        interaction.reply(finalMessage+"<@"+games[chid].players[games[chid].turn].id+"> wins!");
+                        interaction.reply(finalMessage+"\n# <@"+games[chid].players[games[chid].turn].id+"> wins!");
                         games[chid] = null;
                         delete games[chid];
                         return;
