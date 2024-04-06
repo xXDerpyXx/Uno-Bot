@@ -559,7 +559,7 @@ client.on('interactionCreate', async interaction => {
       if(interaction.commandName === 'startuno'){
         var d = interaction.options.getString("input")
         if(d == null){
-          d == "default"
+          d = "default"
         }
         if(decks[d] == null){
           interaction.reply("that deck does not exist, however you can use:\n"+listdecks())
