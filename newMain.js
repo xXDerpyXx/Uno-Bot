@@ -222,6 +222,12 @@ c = new SlashCommandBuilder()
 commands.push(c)
 
 c = new SlashCommandBuilder()
+.setName('listdecks')
+.setDescription('shows all decks you can use for card games')
+
+commands.push(c)
+
+c = new SlashCommandBuilder()
 .setName('draw')
 .setDescription('draws a card from the deck in case you need one')
 
@@ -354,18 +360,6 @@ client.on('messageCreate', (msg) => {
       }
     }
   }
-
-  if(msg.content === '/starteviluno'){
-    msg.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
-    games[chid] = new game("uno",{"types":evilunocards,"variant":"color","variants":evilcolors});
-    games[chid].addPlayer(msg.member.id);
-  }
-
-  if(msg.content === '/startalphabetuno'){
-    msg.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
-    games[chid] = new game("uno",{"types":alphabetunocards,"variant":"color","variants":colors});
-    games[chid].addPlayer(msg.member.id);
-  }
 });
 
 client.on('interactionCreate', async interaction => {
@@ -375,6 +369,9 @@ client.on('interactionCreate', async interaction => {
     
     if (!interaction.isChatInputCommand()) return;
     
+    if(interaction.commandName === "listdecks"){
+      interaction.reply("the decks avalible are:\n"+listdecks())
+   }
 
     if(games[chid] != null){
       if(interaction.commandName === 'enduno'){
