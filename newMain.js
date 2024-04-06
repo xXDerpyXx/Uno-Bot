@@ -2,12 +2,20 @@ var TOKEN = require("./token.js");
 var CLIENT_ID = "334106485535539212"
 var fs = require("fs")
 
+var gods = ["246589957165023232","216465467806580737"]
+
 var decks = {}
 
-fs.readdirSync("./decks/").forEach(file => {
-  console.log("loading "+file);
-  decks[file.split(".")[0]] = require("./decks/"+file)
-});
+function loadDecks(){
+  decks = {}
+  fs.readdirSync("./decks/").forEach(file => {
+    console.log("loading "+file);
+    decks[file.split(".")[0]] = require("./decks/"+file)
+  });
+}
+
+loadDecks();
+
 
 function listdecks(){
   var s = "";
@@ -192,6 +200,12 @@ c = new SlashCommandBuilder()
 commands.push(c)
 
 c = new SlashCommandBuilder()
+.setName('reload')
+.setDescription('reloads deck data')
+
+commands.push(c)
+
+c = new SlashCommandBuilder()
 .setName('begin')
 .setDescription('actually starts the game')
 
@@ -276,6 +290,8 @@ client.on('messageCreate', (msg) => {
 
   var chid = msg.channelId;
 
+
+
   if(games[chid] != null){
     if(games[chid].running){
       var id = games[chid].players[games[chid].turn].id;
@@ -351,6 +367,14 @@ client.on('interactionCreate', async interaction => {
     
     if (!interaction.isChatInputCommand()) return;
     
+    if(gods.includes(interaction.user.id)){
+      if(interaction.commandName === "reload"){
+        loadDecks()
+        interaction.reply("decks reloaded!")
+        return;
+      }
+    }
+
     if(interaction.commandName === "listdecks"){
       interaction.reply("# the decks avalible are:\n\n"+listdecks())
       return;
