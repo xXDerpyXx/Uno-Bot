@@ -276,10 +276,10 @@ client.on('messageCreate', (msg) => {
             
             if(!games[chid].targetPicking){
               games[chid].nextTurn();
-              msg.reply("the color is now "+msg.content+"\n"+("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!"))
+              msg.reply("# the color is now "+msg.content+"\n"+("it's <@"+games[chid].players[games[chid].turn].id+">'s turn!"))
               
             }else{
-              msg.reply("the color is now "+msg.content+", also pick a target")
+              msg.reply("# the color is now "+msg.content+", also pick a target")
             }
           }else{
             if(!getUserFromMention(msg.content))
@@ -301,7 +301,7 @@ client.on('messageCreate', (msg) => {
               msg.reply("they aren't playing the game, they can't draw cards")
               return;
             }else{
-              var tempMessage = "they now draw "+games[chid].draw+" cards"
+              var tempMessage = "# they now draw "+games[chid].draw+" cards"
               var p = 0;
               for(var k = 0; k < games[chid].players.length; k++){
                   if(games[chid].players[k].id == target){
@@ -333,7 +333,7 @@ client.on('messageCreate', (msg) => {
 
   if(msg.content === '/starteviluno'){
     msg.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
-    games[chid] = new game("uno",{"types":unocardtypes,"variant":"color","variants":evilcolors});
+    games[chid] = new game("uno",{"types":evilunocards,"variant":"color","variants":evilcolors});
     games[chid].addPlayer(msg.member.id);
   }
 });

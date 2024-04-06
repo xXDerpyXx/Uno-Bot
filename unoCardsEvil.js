@@ -86,7 +86,7 @@ module.exports = {
   },
   "draw-four":{
     type:"number",
-    draw:2,
+    draw:4,
     color:"random"
   },
   "color-pick":{
