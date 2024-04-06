@@ -374,7 +374,8 @@ client.on('interactionCreate', async interaction => {
     
     if(interaction.commandName === "listdecks"){
       interaction.reply("the decks avalible are:\n"+listdecks())
-   }
+      return;
+    }
 
     if(games[chid] != null){
       if(interaction.commandName === 'enduno'){
