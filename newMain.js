@@ -7,15 +7,15 @@ var decks = {}
 fs.readdirSync("./decks/").forEach(file => {
   console.log("loading "+file);
   decks[file.split(".")[0]] = require("./decks/"+file)
-    console.log(decks)
 });
 
 function listdecks(){
-  var s = ""
+  var s = "";
+  console.log(decks)
   for(var deck in decks){
     s += deck+"\n";
-    s += `${deck["info"]}`;
-    s += "\n\n"
+    s += deck["info"] +"\n";
+    s += "\n"
   }
   return s;
 }
