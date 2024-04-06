@@ -11,7 +11,7 @@ module.exports = {
   "cards":{
     "A":{
       type:"number",
-      draw:0,does
+      draw:0,
       color:"random"
     },
     "B":{
