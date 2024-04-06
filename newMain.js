@@ -2,10 +2,20 @@ var TOKEN = require("./token.js");
 var CLIENT_ID = "334106485535539212"
 var fs = require("fs")
 
-unocards = require("./unoCards.js")
-evilunocards = require("./unoCardsEvil.js")
-alphabetunocards = require("./unoCardsAlphabet.js")
-unocardtypes = require("./unoCards.js")
+var decks = {}
+
+fs.readdirSync("./decks/").forEach(file => {
+  console.log("loading "+file);
+  decks[file.split(".")[0]] = require("./decks/"+file)
+});
+
+function listdecks(){
+  var s = ""
+  for(var k in decks){
+    s += k+"\n"
+  }
+  return s;
+}
 
 var colors = [
   "red",
@@ -80,10 +90,13 @@ class player{
   stringHand(m){
     var temp = "";
     for(var i = 0; i < this.hand.length; i++){
-        temp += this.hand[i].color+" "+this.hand[i].name
-        if(i <= this.hand.length){
-            temp+=", "
-        }
+      temp += this.hand[i].color+" "+this.hand[i].name
+      if(i < this.hand.length-1){
+          temp+=", "
+      }
+      else if(i <= this.hand.length){
+        temp+=" "
+      }
     }
     return temp+" "+m;
   }
@@ -177,6 +190,10 @@ var games = {};
 var c = new SlashCommandBuilder()
 .setName('startuno')
 .setDescription('opens a lobby for uno that anyone else can `/join`')
+.addStringOption(option =>
+  option.setName('input')
+      .setDescription('deck to be used for this game')
+      .setRequired(false));
 
 commands.push(c)
 
@@ -207,6 +224,12 @@ commands.push(c)
 c = new SlashCommandBuilder()
 .setName('draw')
 .setDescription('draws a card from the deck in case you need one')
+
+commands.push(c)
+
+c = new SlashCommandBuilder()
+.setName('showhand')
+.setDescription('shows your hand (only you will be able to see the message)')
 
 commands.push(c)
 
@@ -393,6 +416,20 @@ client.on('interactionCreate', async interaction => {
         }
       }else{
 
+        if(interaction.commandName === "showhand"){
+          var p = 0;
+          for(var k = 0; k < games[chid].players.length; k++){
+            if(games[chid].players[k].id == interaction.member.id){
+                p = k
+            }
+          }
+          await interaction.reply({
+            content:games[chid].players[p].stringHand(""),
+            ephemeral: true
+          });
+          
+        }
+
         if(interaction.commandName === "deck"){
             if(!games[chid]){
                 interaction.reply("there is no game in this channel")
@@ -520,8 +557,17 @@ client.on('interactionCreate', async interaction => {
 
     }else{
       if(interaction.commandName === 'startuno'){
+        var d = interaction.options.getString("input")
+        if(d == null){
+          d == "default"
+        }
+        if(decks[d] == null){
+          interaction.reply("that deck does not exist, however you can use:\n"+listdecks())
+          return;
+        }
+
         interaction.reply("starting a game of uno, anyone can join by typing `/join` in this channel");
-        games[chid] = new game("uno",{"types":unocardtypes,"variant":"color","variants":colors});
+        games[chid] = new game("uno",{"types":decks[d].cards,"variant":"color","variants":decks[d].colors});
         games[chid].addPlayer(interaction.member.id);
       }else{
         interaction.reply("there is no game of uno currently running in this channel, `/startuno` to change that");
