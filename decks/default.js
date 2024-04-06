@@ -1,4 +1,6 @@
 module.exports = {
+  "info":
+      "Default deck of Uno as defined by Mattel™",
   "colors":[
     "red",
     "blue",

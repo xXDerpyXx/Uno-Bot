@@ -1,4 +1,6 @@
 module.exports = {
+  "info":
+      "It is evil. Friendship is temporary!",
   "colors":[
     "red",
     "green",

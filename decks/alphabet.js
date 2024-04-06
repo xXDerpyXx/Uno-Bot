@@ -1,4 +1,7 @@
 module.exports = {
+  "info":
+  "Has the same colors and special cards as normal uno, but uses A-Z rather than 0-9 for cards."
+  ,
   "colors":[
     "red",
     "blue",
@@ -8,7 +11,7 @@ module.exports = {
   "cards":{
     "A":{
       type:"number",
-      draw:0,
+      draw:0,does
       color:"random"
     },
     "B":{
