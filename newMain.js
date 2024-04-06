@@ -12,8 +12,10 @@ fs.readdirSync("./decks/").forEach(file => {
 
 function listdecks(){
   var s = ""
-  for(var k in decks){
-    s += k+"\n"
+  for(var deck in decks){
+    s += deck+"\n";
+    s += `${deck["info"]} \n`;
+    s += "/n"
   }
   return s;
 }
