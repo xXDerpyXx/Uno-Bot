@@ -1,6 +1,6 @@
 module.exports = {
   "0":{
-    type:"number",
+    "type":"number",
     draw:0,
     color:"random"
   },
@@ -49,7 +49,42 @@ module.exports = {
     draw:0,
     color:"random"
   },
+  "A":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
+  "B":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
+  "C":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
+  "D":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
+  "E":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
+  "F":{
+    type:"number",
+    draw:0,
+    color:"random"
+  },
   "draw-two":{
+    type:"number",
+    draw:2,
+    color:"random"
+  },
+  "draw-four":{
     type:"number",
     draw:2,
     color:"random"
@@ -62,6 +97,11 @@ module.exports = {
   "draw-four":{
     type:"color",
     draw:4,
+    color:"wild"
+  },
+  "draw-eight":{
+    type:"color",
+    draw:8,
     color:"wild"
   },
   "reverse":{
