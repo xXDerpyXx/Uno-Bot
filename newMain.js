@@ -425,7 +425,7 @@ client.on('interactionCreate', async interaction => {
               return;
             }
 
-            finalMessage += ("you used the "+content[0]+" "+content[1]+" card")+"\n";
+            finalMessage += ("you used the **"+content[0]+" "+content[1]+"** card")+"\n";
             
             
 
@@ -493,8 +493,6 @@ client.on('interactionCreate', async interaction => {
               games[chid].lastCard = games[chid].players[p].hand[spot];
               games[chid].returnCard(p,spot);
 
-              // so apparently if you want to print this it crashes??????
-              //interaction.reply("you used the "+content[0]+" "+content[1]+" card");
               if(games[chid].players[games[chid].turn].hand.length == 1){
                 finalMessage += ("Uno <@"+games[chid].players[games[chid].turn].id+">!");
               }
