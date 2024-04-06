@@ -13,9 +13,8 @@ fs.readdirSync("./decks/").forEach(file => {
 function listdecks(){
   var s = ""
   for(var deck in decks){
-    s += deck+"\n";
-    s += decks[deck].info +"\n";
-    s += "\n"
+    s += "## "+deck+"\n";
+    s += "`"+decks[deck].info +"`\n";
   }
   return s;
 }
@@ -353,7 +352,7 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
     
     if(interaction.commandName === "listdecks"){
-      interaction.reply("the decks avalible are:\n"+listdecks())
+      interaction.reply("# the decks avalible are:\n\n"+listdecks())
       return;
     }
 
