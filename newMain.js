@@ -14,8 +14,8 @@ function listdecks(){
   var s = ""
   for(var deck in decks){
     s += deck+"\n";
-    s += `${deck["info"]} \n`;
-    s += "/n"
+    s += deck["info"] +"\n";
+    s += "\n"
   }
   return s;
 }
