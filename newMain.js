@@ -14,31 +14,11 @@ function listdecks(){
   var s = ""
   for(var deck in decks){
     s += deck+"\n";
-    s += deck["info"] +"\n";
+    s += decks[deck].info +"\n";
     s += "\n"
   }
   return s;
 }
-
-var colors = [
-  "red",
-  "green",
-  "blue",
-  "yellow"
-]
-
-var evilcolors = [
-  "red",
-  "green",
-  "blue",
-  "yellow",
-  "pink",
-  "lime",
-  "cyan",
-  "white",
-  "black",
-  "brown"
-]
 
 const { REST, Routes,SlashCommandBuilder } = require('discord.js');
 
