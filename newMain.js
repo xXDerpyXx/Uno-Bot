@@ -180,6 +180,12 @@ var c = new SlashCommandBuilder()
 commands.push(c)
 
 c = new SlashCommandBuilder()
+.setName('enduno')
+.setDescription('closes the uno lobby instantly, killing all inhabitants')
+
+commands.push(c)
+
+c = new SlashCommandBuilder()
 .setName('join')
 .setDescription('join a game of uno')
 
@@ -341,6 +347,13 @@ client.on('interactionCreate', async interaction => {
     
 
     if(games[chid] != null){
+      if(interaction.commandName === 'enduno'){
+        interaction.reply("uno is over!")
+        games[chid] = null;
+        delete games[chid];
+        return
+      }
+
       if(interaction.commandName === 'join'){
         if(games[chid].running == false){
           games[chid].addPlayer(interaction.member.id);
