@@ -1,5 +1,5 @@
 var TOKEN = require("./token.js");
-var CLIENT_ID = "334106485535539212"
+var CLIENT_ID = "337712474713489418"
 var fs = require("fs")
 
 var gods = ["246589957165023232","216465467806580737"]
@@ -28,6 +28,7 @@ function listdecks(){
 }
 
 const { REST, Routes,SlashCommandBuilder } = require('discord.js');
+
 
 var commands = [
     
@@ -247,7 +248,13 @@ commands.push(c)
 
 
 const rest = new REST({ version: '10' }).setToken(TOKEN);
-  
+
+/*
+rest.put(Routes.applicationCommands(CLIENT_ID), { body: [] })
+	.then(() => console.log('Successfully deleted all application commands.'))
+	.catch(console.error);
+*/
+
 (async () => {
   try {
     console.log('Started refreshing application (/) commands.');
@@ -366,7 +373,7 @@ client.on('interactionCreate', async interaction => {
 
     
     if (!interaction.isChatInputCommand()) return;
-    
+
     if(gods.includes(interaction.user.id)){
       if(interaction.commandName === "reload"){
         loadDecks()
